@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='test.js' defer></script>
+    <!-- defer옵션을 쓰게되면 HTML이 전부다 파싱, 즉 분석이 완료된 다음에, DOMContentLoaded event 가 발생하기 이전에
+    먼저호출이된다. -->
+
+</head>
+
+<body>
+
+    <script>
+        // 브라우저가 HTML파일을 열게되면 처음부터 HTML페이지를 읽어서, DOM요소로 변환한 다음에
+        // <script>부분을 만나면 window에 이벤트 리스너를 등록하게되고,
+        // window에서 페이지에 필요한 모든!!! 리소스(폰트,이미지,css...등)가 로딩이 완료되면 콜백함수가 실행된다.
+        window.addEventListener('load', () => {
+            console.log('load')
+        })
+
+        //load와는 다르게 DOMContentLoaded는 document만, 즉 HTML만 다 완료가 되면 호출된다.
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded')
+        })
+    </script>
+</body>
+
+</html>
+
+<!-- 웹페이지가 있다면 브라우저에서 HTML 파일을 먼저 읽은 다음에, 그에 관련된 이미지나 폰트나 필요한 리소스가 있다면 리소스도 함께
+다운로드하게된다. 그리고 자바스크립트 파일이 있다면 그 자바스크립트 파일도 다운로드 받는다.
+
+ => 자바스크립트 파일이 어떤리소스에 대해서, 즉 이미지나 폰트에 대해서 뭐가를 수행하지 않는이상
+load 보다는  DOMContentLoaded안에서 동작을 수행하게 하는것이 조금더 빠르게 처리된다.
+물론 !!!script defer를 이용하면 DOMContentLoaded보다도 더 빠르게 처리할수있다.
+결론=> defer를 추천한다.
+
+<추가지식>
+load, DOMContentLoaded 이외에도
+//resource is being unloaded
+load가 안될때, 즉 페이지가 끝날때 호출되는 'unload'라는 이벤트도 있고
+//before unload
+브라우저에서 사용자가 나기기 전에 불려지는 이벤트인 'beforeunload'도있다. -->
