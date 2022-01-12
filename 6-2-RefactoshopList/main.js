@@ -1,3 +1,5 @@
+//6-ShopList처럼 li 마다 event 리스터를 등록하는건 완전 구리다.
+//event delegation을 이용하여 refactoring해보자
 const items = document.querySelector('.items')
 const input = document.querySelector('.footer__input')
 const addBtn = document.querySelector('.footer__button')
@@ -16,6 +18,7 @@ function createItem(text) {
   const deleteBtn = document.createElement('button')
   deleteBtn.setAttribute('class', 'item__delete')
   deleteBtn.innerHTML = `<i class='far fa-trash-alt'></i>`
+
   deleteBtn.addEventListener('click', () => {
     items.removeChild(itemRow)
   })
