@@ -4,31 +4,20 @@ const items = document.querySelector('.items')
 const input = document.querySelector('.footer__input')
 const addBtn = document.querySelector('.footer__button')
 
+let id = 0 //UUID를 통해서 고유한 아이디를 만드는것이좋지만, 일단은 integer로 하자
 function createItem(text) {
   const itemRow = document.createElement('li')
   itemRow.setAttribute('class', 'item__row')
-
-  const item = document.createElement('div')
-  item.setAttribute('class', 'item')
-
-  const name = document.createElement('span')
-  name.setAttribute('class', 'item__name')
-  name.innerText = text
-
-  const deleteBtn = document.createElement('button')
-  deleteBtn.setAttribute('class', 'item__delete')
-  deleteBtn.innerHTML = `<i class='far fa-trash-alt'></i>`
-
-  deleteBtn.addEventListener('click', () => {
-    items.removeChild(itemRow)
-  })
-  const itemDivider = document.createElement('div')
-  itemDivider.setAttribute('class', 'item__divider')
-
-  item.appendChild(name)
-  item.appendChild(deleteBtn)
-  itemRow.appendChild(item)
-  itemRow.appendChild(itemDivider)
+  itemRow.setAttribute('data-id', id)
+  itemRow.innerHTML = `
+        <div class="item" >
+           <span class="item__name">${text}</span>
+            <button class="item__delete">
+             <i class="far fa-trash-alt" data-id=${id}></i>
+           </button>
+             </div>
+         <div class="item__divider"></div>`
+  id++
   return itemRow
 }
 
@@ -58,5 +47,21 @@ addBtn.addEventListener('click', () => {
 input.addEventListener('keypress', (event) => {
   if (event.key === 'Enter') {
     onAdd()
+  }
+})
+
+items.addEventListener('click', (event) => {
+  //쓰레기통아이콘을 누를때라는 조건을 건다
+  //삭제를 구현하기 위한것이므로
+  //혹시 다른 I 아이콘이 있을경우 , 쓰레기통을 클릭했다는 근거가 더필요하기떄문에
+  //dataset속성을 사용함
+  const id = event.target.dataset.id
+  if (id && event.target.nodeName === 'I') {
+    //ul의요소에서 remove를 쓰기위해
+    //쓰레기 아이콘을 담고있는 li를 가져와야함
+    //그래서 li와 쓰레기 아이콘에 data-set을 매칭하여 가져오고자한것임
+    //추가적으로 item className에서 data-id 속성에 접근할때 아래처럼 접근가능함
+    const toBeDeleted = document.querySelector(`.item__row[data-id='${id}']`)
+    toBeDeleted.remove()
   }
 })
