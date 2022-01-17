@@ -43,8 +43,24 @@ addBtn.addEventListener('click', () => {
   onAdd()
 })
 
-//어떤 키가 눌렸는지 보려면 event를 추적해보면됨
-input.addEventListener('keypress', (event) => {
+//어떤 키가 눌렸는지 보려면 event를 추적해보면됨, 헌데 keypress는 곧 사라질 예정이라 쓰지 않는 것을 추천한다.
+//대신 keydown을 쓰는것을 추천한다. keyup 이벤트도 있는데 keyup은 버튼이 눌려있다가 뗴어질때 발생하는 이벤트이다.
+
+// input.addEventListener('keypress', (event) => {
+//   if (event.key === 'Enter') {
+//     onAdd()
+//   }
+// })
+input.addEventListener('keydown', (event) => {
+  if (event.key === 'a') {
+    //이렇게 하면 input에 a가 입력될때는 input에 a가 써지지 않는다, why? a 가 입력될때 event.preventDefault()를 호출하고있으니까 , 브라우저에서 해당 이벤트를 취소하고있으니까
+    event.preventDefault()
+  }
+//한글로 입력할경우, 가끔 필요없는 추가적인 event가 끼여들어가 예기치 않은 input입력이 벌어질수있다.
+//고로 event가 isComposing상태라면 return ;을 하여 한글에서의 예기치 않은 상황을 방지하자
+  if (event.isComposing) {
+    return
+  }
   if (event.key === 'Enter') {
     onAdd()
   }
