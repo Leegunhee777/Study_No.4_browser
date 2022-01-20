@@ -42,6 +42,11 @@ body {
   border-radius: 20px;
   font-size: 32px;
   margin-top: 8px;
+  /* 영역은 차지하지만, 보이거나 클릭되면안됨
+  display:none 은 렌더트리에서 아예없어져 영역도 없어지고,
+  opacity: 0은 클릭이되어버린다.
+  */
+  visibility: hidden;
 }
 .game__score {
   text-align: center;
@@ -53,6 +58,7 @@ body {
   border-radius: 50%;
   border: 3px solid black;
   color: white;
+  visibility: hidden;
 }
 .game__field {
   width: 100%;
