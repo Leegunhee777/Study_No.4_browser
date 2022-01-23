@@ -11,6 +11,14 @@ const gameBtn = document.querySelector('.game__button')
 const gameTimer = document.querySelector('.game__timer')
 const gameScore = document.querySelector('.game__score')
 
+const popUp = document.querySelector('.pop-up')
+const popUpText = document.querySelector('.pop-up__message')
+const popUpRefresh = document.querySelector('.pop-up__refresh')
+
+//field.addEventListener('click', (event) => onFieldClick(event));
+//위에 방식이랑 똑같음
+field.addEventListener('click', onFieldClick)
+
 //게임의 시작유무
 let started = false
 //게임의 점수
@@ -24,18 +32,36 @@ gameBtn.addEventListener('click', () => {
   } else {
     startGame()
   }
-  started = !started
+})
+
+popUpRefresh.addEventListener('click', () => {
+  startGame()
+  hidePopUp()
 })
 function startGame() {
+  started = true
   initGame()
   showStopButton()
   showTimerAndScore()
   startGameTimer()
 }
-function stopGame() {}
-
+function stopGame() {
+  started = false
+  clearInterval(timer)
+  hideGameButton()
+  showPopUpWithText('REPLAY?')
+}
+//true가 들어오면 이긴것, false가 들어오면 진것
+function finishGame(win) {
+  started = false
+  hideGameButton()
+  showPopUpWithText(win ? 'YOU WON' : 'YOU LOST')
+}
+function hideGameButton() {
+  gameBtn.style.visibility = 'hidden'
+}
 function showStopButton() {
-  const icon = gameBtn.querySelector('.fa-play')
+  const icon = gameBtn.querySelector('.fas')
   // fontawsome의 아이콘className을 활용하여 stop아이콘 이용할수있다
   icon.classList.add('fa-stop')
   icon.classList.remove('fa-play')
@@ -55,16 +81,28 @@ function startGameTimer() {
   timer = setInterval(() => {
     if (remainingTimeSec <= 0) {
       clearInterval(timer)
+      //CARROT_COUNT === socre은 이긴상황을 의미
+      finishGame(CARROT_COUNT === score)
       return
     }
     updateTimerText(--remainingTimeSec)
   }, 1000)
 }
-
+function stopGameTimer() {
+  clearInterval(timer)
+}
 function updateTimerText(time) {
   const minutes = Math.floor(time / 60)
   const seconds = time % 60
   gameTimer.innerText = `${minutes}:${seconds}`
+}
+
+function showPopUpWithText(text) {
+  popUpText.innerHTML = text
+  popUp.classList.remove('pop-up--hide')
+}
+function hidePopUp() {
+  popUp.classList.add('pop-up--hide')
 }
 function initGame() {
   //field 초기화
@@ -74,6 +112,32 @@ function initGame() {
   addItem('bug', BUG_COUNT, 'img/bug.png')
 }
 
+function onFieldClick(event) {
+  if (!started) {
+    return
+  }
+
+  const target = event.target
+  //target.matches를 활용하여, 해당 타켓의 className이 carrot인지 확인가능
+  if (target.matches('.carrot')) {
+    //당근
+    target.remove()
+    score++
+    updateScoreBoard()
+    if (score === CARROT_COUNT) {
+      finishGame(true)
+    }
+  } else if (target.matches('.bug')) {
+    //벌레!!
+    stopGameTimer()
+    finishGame(false)
+  }
+  console.log(event.target)
+}
+
+function updateScoreBoard() {
+  gameScore.innerHTML = CARROT_COUNT - score
+}
 function addItem(className, count, imgPath) {
   const x1 = 0
   const y1 = 0
