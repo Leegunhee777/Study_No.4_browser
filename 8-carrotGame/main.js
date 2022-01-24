@@ -80,6 +80,7 @@ function showStopButton() {
   // fontawsome의 아이콘className을 활용하여 stop아이콘 이용할수있다
   icon.classList.add('fa-stop')
   icon.classList.remove('fa-play')
+  gameBtn.style.visibility = 'hidden'
 }
 
 function showTimerAndScore() {
