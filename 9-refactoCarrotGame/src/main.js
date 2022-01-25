@@ -1,26 +1,40 @@
 'use strict'
 import PopUp from './popup.js'
-const CARROT_SIZE = 80
+import Field from './field.js'
 const CARROT_COUNT = 5
 const BUG_COUNT = 5
 const GAME_DURATION_SEC = 5
-const field = document.querySelector('.game__field')
-//getBoundingClientRect을 통해서
-//해당 DOM의 x,y, 위치좌표 및 width, heigt등을 알수있다.
-const fieldRect = field.getBoundingClientRect()
+
 const gameBtn = document.querySelector('.game__button')
 const gameTimer = document.querySelector('.game__timer')
 const gameScore = document.querySelector('.game__score')
 
-const carrotSound = new Audio('./sound/carrot_pull.mp3')
 const alertSound = new Audio('./sound/alert.wav')
 const bgSound = new Audio('./sound/bg.mp3')
 const bugSound = new Audio('./sound/bug_pull.mp3')
 const winSound = new Audio('./sound/game_win.mp3')
 //field.addEventListener('click', (event) => onFieldClick(event));
 //위에 방식이랑 똑같음
-field.addEventListener('click', onFieldClick)
 
+const gameField = new Field(CARROT_COUNT, BUG_COUNT)
+gameField.setClickListener(onItemClick)
+
+function onItemClick(item) {
+  if (!started) {
+    return
+  }
+  if (item === 'carrot') {
+    //당근
+    score++
+    updateScoreBoard()
+    if (score === CARROT_COUNT) {
+      finishGame(true)
+    }
+  } else if (item === 'bug') {
+    //벌레!!
+    finishGame(false)
+  }
+}
 //게임의 시작유무
 let started = false
 //게임의 점수
@@ -113,35 +127,10 @@ function updateTimerText(time) {
 
 function initGame() {
   score = 0
-  //field 초기화
-  field.innerHTML = ``
   gameScore.innerHTML = CARROT_COUNT
-  addItem('carrot', CARROT_COUNT, 'img/carrot.png')
-  addItem('bug', BUG_COUNT, 'img/bug.png')
+  gameField.init()
 }
 
-function onFieldClick(event) {
-  if (!started) {
-    return
-  }
-
-  const target = event.target
-  //target.matches를 활용하여, 해당 타켓의 className이 carrot인지 확인가능
-  if (target.matches('.carrot')) {
-    //당근
-    target.remove()
-    score++
-    playSound(carrotSound)
-    updateScoreBoard()
-    if (score === CARROT_COUNT) {
-      finishGame(true)
-    }
-  } else if (target.matches('.bug')) {
-    //벌레!!
-    finishGame(false)
-  }
-  console.log(event.target)
-}
 function playSound(sound) {
   sound.currentTime = 0
   sound.play()
@@ -153,31 +142,4 @@ function stopSound(sound) {
 
 function updateScoreBoard() {
   gameScore.innerHTML = CARROT_COUNT - score
-}
-function addItem(className, count, imgPath) {
-  const x1 = 0
-  const y1 = 0
-  //x, y좌표의 기준이 좌측상단을 기준으로하므로,
-  //width or heigt의 끝에 좌표가 설정될경우
-  //img 크기만큼 밖으로 튀어나올수있으므로, 이미지 크기를 뺴줘야
-  //영역밖으로 나가는 이미지가 없게됨
-  const x2 = fieldRect.width - CARROT_SIZE
-  const y2 = fieldRect.height - CARROT_SIZE
-  for (let i = 0; i < count; i++) {
-    const item = document.createElement('img')
-    item.setAttribute('class', className)
-    item.setAttribute('src', imgPath)
-    //부보컨데이터의 position을 static이 아닌것으로 설정해줘야
-    //우리의 absolute가 온전한 의미가 있다.
-    item.style.position = 'absolute'
-    const x = randomNumber(x1, x2)
-    const y = randomNumber(y1, y2)
-    item.style.left = `${x}px`
-    item.style.top = `${y}px`
-    field.appendChild(item)
-  }
-}
-
-function randomNumber(min, max) {
-  return Math.random() * (max - min) + min
 }
