@@ -1,6 +1,7 @@
 'use strict'
 import PopUp from './popup.js'
 import Field from './field.js'
+import * as sound from './sound.js'
 const CARROT_COUNT = 5
 const BUG_COUNT = 5
 const GAME_DURATION_SEC = 5
@@ -9,10 +10,6 @@ const gameBtn = document.querySelector('.game__button')
 const gameTimer = document.querySelector('.game__timer')
 const gameScore = document.querySelector('.game__score')
 
-const alertSound = new Audio('./sound/alert.wav')
-const bgSound = new Audio('./sound/bg.mp3')
-const bugSound = new Audio('./sound/bug_pull.mp3')
-const winSound = new Audio('./sound/game_win.mp3')
 //field.addEventListener('click', (event) => onFieldClick(event));
 //위에 방식이랑 똑같음
 
@@ -61,27 +58,27 @@ function startGame() {
   showStopButton()
   showTimerAndScore()
   startGameTimer()
-  playSound(bgSound)
+  sound.playBackground()
 }
 function stopGame() {
   started = false
   clearInterval(timer)
   hideGameButton()
   gameFinishBanner.showWithText('REPLAY?')
-  playSound(alertSound)
-  stopSound(bgSound)
+  sound.playAlert()
+  sound.stopBackground()
 }
 //true가 들어오면 이긴것, false가 들어오면 진것
 function finishGame(win) {
   started = false
   hideGameButton()
   if (win) {
-    playSound(winSound)
+    sound.playWin()
   } else {
-    playSound(bugSound)
+    sound.playBug()
   }
   stopGameTimer()
-  stopSound(bgSound)
+  sound.stopBackground()
   gameFinishBanner.showWithText(win ? 'YOU WON' : 'YOU LOST')
 }
 function hideGameButton() {
@@ -129,15 +126,6 @@ function initGame() {
   score = 0
   gameScore.innerHTML = CARROT_COUNT
   gameField.init()
-}
-
-function playSound(sound) {
-  sound.currentTime = 0
-  sound.play()
-}
-
-function stopSound(sound) {
-  sound.pause()
 }
 
 function updateScoreBoard() {
