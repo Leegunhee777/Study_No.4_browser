@@ -1,6 +1,40 @@
 import Field from './field.js'
 import * as sound from './sound.js'
-export default class Game {
+
+//자바스크립트로 타입을 보장하는방법 그냥 string을 직접입력하는것보다
+//훨신 안정됨
+export const Reason = Object.freeze({
+  win: 'win',
+  lose: 'lose',
+  cancel: 'cancel',
+})
+
+//Builder Pattern
+//외부에서는 우리가 Game클래스를 export 하지 않았기 때문에
+//더이상 Game이 외부로 보여지지 않는다.
+export class GameBuilder {
+  withGameDuration = (duration) => {
+    this.gameDuration = duration
+    return this
+  }
+  withCarrotCount = (num) => {
+    this.carrotCount = num
+    return this
+  }
+  withBugCount = (num) => {
+    this.bugCount = num
+    return this
+  }
+  build = () => {
+    return new Game(
+      this.gameDuration, //
+      this.carrotCount, //
+      this.bugCount
+    )
+  }
+}
+
+class Game {
   constructor(gameDuration, carrotCount, bugCount) {
     this.gameDuration = gameDuration
     this.carrotCount = carrotCount
@@ -45,7 +79,21 @@ export default class Game {
     this.hideGameButton()
     sound.playAlert()
     sound.stopBackground()
-    this.onGameStop && this.onGameStop('cancel')
+    this.onGameStop && this.onGameStop(Reason.cancel)
+  }
+
+  //true가 들어오면 이긴것, false가 들어오면 진것
+  finish = (win) => {
+    this.started = false
+    this.hideGameButton()
+    if (win) {
+      sound.playWin()
+    } else {
+      sound.playBug()
+    }
+    this.stopGameTimer()
+    sound.stopBackground()
+    this.onGameStop && this.onGameStop(win ? Reason.win : Reason.lose)
   }
 
   onItemClick = (item) => {
@@ -64,21 +112,6 @@ export default class Game {
       this.finish(false)
     }
   }
-
-  //true가 들어오면 이긴것, false가 들어오면 진것
-  finish = (win) => {
-    this.started = false
-    this.hideGameButton()
-    if (win) {
-      sound.playWin()
-    } else {
-      sound.playBug()
-    }
-    this.stopGameTimer()
-    sound.stopBackground()
-    this.onGameStop && this.onGameStop(win ? 'win' : 'lose')
-  }
-
   showStopButton = () => {
     const icon = this.gameBtn.querySelector('.fas')
     // fontawsome의 아이콘className을 활용하여 stop아이콘 이용할수있다
