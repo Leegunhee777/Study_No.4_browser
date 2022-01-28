@@ -49,7 +49,7 @@ export default class Field {
       this.field.appendChild(item)
     }
   }
-  onClick(event) {
+  onClick = (event) => {
     const target = event.target
     //target.matches를 활용하여, 해당 타켓의 className이 carrot인지 확인가능
     console.log(this.onItemClick)
