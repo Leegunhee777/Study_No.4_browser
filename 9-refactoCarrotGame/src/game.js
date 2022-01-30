@@ -1,6 +1,5 @@
-import Field from './field.js'
+import {Field, ItemType} from './field.js'
 import * as sound from './sound.js'
-
 //자바스크립트로 타입을 보장하는방법 그냥 string을 직접입력하는것보다
 //훨신 안정됨
 export const Reason = Object.freeze({
@@ -46,7 +45,7 @@ class Game {
     this.gameBtn = document.querySelector('.game__button')
     this.gameBtn.addEventListener('click', () => {
       if (this.started) {
-        this.stop()
+        this.stop(Reason.cancel)
       } else {
         this.start()
       }
@@ -73,43 +72,29 @@ class Game {
     this.startGameTimer()
     sound.playBackground()
   }
-  stop = () => {
+  stop = (reason) => {
     this.started = false
-    clearInterval(this.timer)
-    this.hideGameButton()
-    sound.playAlert()
-    sound.stopBackground()
-    this.onGameStop && this.onGameStop(Reason.cancel)
-  }
-
-  //true가 들어오면 이긴것, false가 들어오면 진것
-  finish = (win) => {
-    this.started = false
-    this.hideGameButton()
-    if (win) {
-      sound.playWin()
-    } else {
-      sound.playBug()
-    }
     this.stopGameTimer()
+    this.hideGameButton()
     sound.stopBackground()
-    this.onGameStop && this.onGameStop(win ? Reason.win : Reason.lose)
+
+    this.onGameStop && this.onGameStop(reason)
   }
 
   onItemClick = (item) => {
     if (!this.started) {
       return
     }
-    if (item === 'carrot') {
+    if (item === ItemType.carrot) {
       //당근
       this.score++
       this.updateScoreBoard()
       if (this.score === this.carrotCount) {
-        this.finish(true)
+        this.stop(Reason.win)
       }
-    } else if (item === 'bug') {
+    } else if (item === ItemType.bug) {
       //벌레!!
-      this.finish(false)
+      this.stop(Reason.lose)
     }
   }
   showStopButton = () => {
@@ -138,7 +123,7 @@ class Game {
       if (remainingTimeSec <= 0) {
         clearInterval(this.timer)
         //CARROT_COUNT === socre은 이긴상황을 의미
-        this.finish(this.carrotCount === this.score)
+        this.stop(this.carrotCount === this.score ? Reason.win : Reason.lose)
         return
       }
       this.updateTimerText(--remainingTimeSec)

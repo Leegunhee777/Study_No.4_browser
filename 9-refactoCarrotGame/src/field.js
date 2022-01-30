@@ -1,7 +1,11 @@
 'use strict'
-const CARROT_SIZE = 80
 import * as sound from './sound.js'
-export default class Field {
+const CARROT_SIZE = 80
+export const ItemType = Object.freeze({
+  carrot: 'carrot',
+  bug: 'bug',
+})
+export class Field {
   constructor(carrotCount, bugCount) {
     this.carrotCount = carrotCount
     this.bugCount = bugCount
@@ -57,10 +61,10 @@ export default class Field {
       //당근일때
       target.remove()
       sound.playCarrot()
-      this.onItemClick && this.onItemClick('carrot')
+      this.onItemClick && this.onItemClick(ItemType.carrot)
     } else if (target.matches('.bug')) {
       //벌레일때
-      this.onItemClick && this.onItemClick('bug')
+      this.onItemClick && this.onItemClick(ItemType.bug)
     }
   }
 }
